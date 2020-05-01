@@ -1,5 +1,4 @@
 import pygame
-import time
 from Solver import solve
 pygame.font.init()
 
@@ -38,19 +37,16 @@ class Grid:
 
     def reset_screen(self):
         self.screen.fill((255,255,255))
-        fnt = pygame.font.SysFont("comicsans", 40)
-        text = fnt.render("Time: ", 1, (0, 0, 0))
-        screen.blit(text, (380, 560))
-        fnt = pygame.font.SysFont("comicsans", 40)
-        text = fnt.render("Time: ", 1, (0, 0, 0))
-        screen.blit(text, (380, 560))
         pygame.draw.rect(screen, (0, 0, 0), (40, 552, 100, 40), 2)
-        fnt = pygame.font.SysFont("comicsans", 30)
+        fnt = pygame.font.SysFont("comicsans", 25)
         text = fnt.render("Check", 1, (0, 0, 0))
         screen.blit(text, (60, 565))
         pygame.draw.rect(screen, (0, 0, 0), (220, 552, 100, 40), 2)
         text = fnt.render("Solve", 1, (0, 0, 0))
         screen.blit(text, (245, 565))
+        pygame.draw.rect(screen, (0, 0, 0), (400, 552, 100, 40), 2)
+        text = fnt.render("New Board", 1, (0, 0, 0))
+        screen.blit(text, (405, 565))
         self.draw()
 
     def click(self,coord):
@@ -70,10 +66,14 @@ class Grid:
             self.cubes[i][j].draw_cube(self.screen,(255,0,0),x,y,3)
             self.cubes[i][j].clicked = True
 
-        if x >= 0 and x <= 120 and y == 540:
+        x = coord[0]
+        y = coord[1]
+        if x >= 40 and x <= 140 and y >= 550 and y <= 590:
             self.button_check()
-        elif x >= 120 and x <= 300 and y == 540:
+        elif x >= 220 and x <= 320 and y >= 550 and y <= 590:
             self.button_solve()
+        elif x >= 400 and x <= 500 and y >= 550 and y <= 590:
+            self.button_new_board()
 
     def click_with_keyboard(self,i,j):
         if i > 8:
@@ -148,6 +148,10 @@ class Grid:
             for j in range(9):
                 self.cubes[i][j].value = self.board[i*9+j]
         self.reset_screen()
+
+    def button_new_board(self):
+        print("generating new board")
+
     def solver(self):
         solve(self.board)
 
@@ -210,16 +214,20 @@ board = [7, 8, None, 4, None, None, 1, 2, None,
 screen = pygame.display.set_mode((541,600))
 pygame.display.set_caption("Sudoku")
 screen.fill((255,255,255))
-fnt = pygame.font.SysFont("comicsans", 40)
-text = fnt.render("Time: ", 1, (0, 0, 0))
-screen.blit(text, (380, 560))
+
+fnt = pygame.font.SysFont("comicsans", 25)
+
 pygame.draw.rect(screen, (0,0,0), (40, 552, 100, 40), 2)
-fnt = pygame.font.SysFont("comicsans", 30)
 text = fnt.render("Check", 1, (0, 0, 0))
-screen.blit(text, (60, 565))
+screen.blit(text, (65, 565))
+
 pygame.draw.rect(screen, (0,0,0), (220, 552, 100, 40), 2)
 text = fnt.render("Solve", 1, (0, 0, 0))
-screen.blit(text, (245, 565))
+screen.blit(text, (250, 565))
+
+pygame.draw.rect(screen, (0,0,0), (400, 552, 100, 40), 2)
+text = fnt.render("New Board", 1, (0, 0, 0))
+screen.blit(text, (405, 565))
 
 
 
@@ -227,7 +235,6 @@ screen.blit(text, (245, 565))
 cube = Cube(10,10,10)
 grid = Grid(board,screen)
 grid.draw()
-pygame.display.update()
 
 
 running = True
