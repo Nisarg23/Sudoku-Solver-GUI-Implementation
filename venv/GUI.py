@@ -35,7 +35,6 @@ class Grid:
                     self.cubes[i][j].place_temp_number(x, y, (128, 128, 128))
 
 
-
     def reset_screen(self):
         self.screen.fill((255,255,255))
         fnt = pygame.font.SysFont("comicsans", 40)
@@ -87,8 +86,10 @@ class Grid:
 
 
     def set_temp(self,num):
-        self.reset_screen()
         i, j = self.selected()
+        self.cubes[i][j].value = None
+        self.reset_screen()
+
         self.click_with_keyboard(i,j)
         x = i * 60
         y = j * 60
@@ -97,15 +98,15 @@ class Grid:
         self.cubes[i][j].place_temp_number(y,x,(128,128,128))
 
     def set(self):
-        self.reset_screen()
         i, j = self.selected()
-        self.click_with_keyboard(i, j)
         x = i * 60
         y = j * 60
         if self.cubes[i][j].value is not None:
 
             self.cubes[i][j].tmp_val = False
             self.cubes[i][j].place_number(y,x,(128,128,128))
+        self.reset_screen()
+        self.click_with_keyboard(i, j)
 
     def selected(self):
         for i in range(9):
