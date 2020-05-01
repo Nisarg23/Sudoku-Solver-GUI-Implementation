@@ -89,27 +89,27 @@ def box_check(s):
 
     return None
 
-def find_empty():
+def find_empty(board):
     for i in range (9):
         for j in range (9):
-            if not_solved[i * 9 + j] is None:
+            if board[i * 9 + j] is None:
                 return i * 9 + j
 
     return None
 
 def solve(board):
-    index = find_empty()
+    index = find_empty(board)
 
     if not index:
         return True
 
     for i in range(1,10):
-        not_solved[index] = i
-        if box_check(not_solved) is None and vertical_check(not_solved) is None and horizontal_check(not_solved) is None:
-            if solve(not_solved):
+        board[index] = i
+        if box_check(board) is None and vertical_check(board) is None and horizontal_check(board) is None:
+            if solve(board):
                 return True
 
-        not_solved[index] = None
+        board[index] = None
 
     return False
 
@@ -144,7 +144,3 @@ not_solved = [7, 8, None, 4, None, None, 1, 2, None,
               None, 4, 9, 2, None, 6, None, None, 7]
 # solution to sudoku
 
-print_board()
-solve(not_solved)
-print("++++++++++++++++++++++")
-print_board()
