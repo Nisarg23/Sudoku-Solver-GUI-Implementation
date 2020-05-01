@@ -26,14 +26,22 @@ class Grid:
                 y = i * 60
                 x = j * 60
                 self.cubes[i][j].draw_cube(self.screen,(0, 0, 0),x,y,1)
-                self.cubes[i][j].place_numbers(x, y)
+                if self.cubes[i][j].tmp_val == False:
+                    if self.cubes[i][j].unchangeable == False:
+                        self.cubes[i][j].place_number(x, y,(128,128,128))
+                    else:
+                        self.cubes[i][j].place_number(x, y, (0,0,0))
+                elif self.cubes[i][j].tmp_val == True:
+                    self.cubes[i][j].place_temp_number(x, y, (128, 128, 128))
 
 
-    def clear_screen(self):
+
+    def reset_screen(self):
         self.screen.fill((255,255,255))
         fnt = pygame.font.SysFont("comicsans", 40)
         text = fnt.render("Time: ", 1, (0, 0, 0))
         screen.blit(text, (380, 560))
+        self.draw()
 
     def click(self,coord):
         i = coord[1] // 60
@@ -41,19 +49,19 @@ class Grid:
         x = j*60
         y = i*60
 
-        self.clear_screen()
-        self.draw()
+        self.reset_screen()
+        if y < 540:
+            for m in range(9):
+                for n in range(9):
+                    if self.cubes[m][n].clicked_status() == True:
+                        self.cubes[m][n].clicked = False
 
-        for m in range(9):
-            for n in range(9):
-                if self.cubes[m][n].clicked_status() == True:
-                    self.cubes[m][n].clicked = False
+            self.cubes[i][j].draw_cube(self.screen,(255,0,0),x,y,3)
+            self.cubes[i][j].clicked = True
+        elif x >= 40 and x <= 140 and y >= 552 and y <= 592:
+            self.button_check()
 
-        self.cubes[i][j].draw_cube(self.screen,(255,0,0),x,y,3)
-        self.cubes[i][j].clicked = True
-        print(self.selected())
-
-    def click_with_mouse(self,i,j):
+    def click_with_keyboard(self,i,j):
         if i > 8:
             i = 8
         elif i < 0:
@@ -67,8 +75,7 @@ class Grid:
         y = i * 60
 
 
-        self.clear_screen()
-        self.draw()
+        self.reset_screen()
 
         for m in range(9):
             for n in range(9):
@@ -77,9 +84,28 @@ class Grid:
 
         self.cubes[i][j].draw_cube(self.screen, (255, 0, 0), x, y, 3)
         self.cubes[i][j].clicked = True
-        print(self.selected())
+
+
+    def set_temp(self,num):
+        self.reset_screen()
+        i, j = self.selected()
+        self.click_with_keyboard(i,j)
+        x = i * 60
+        y = j * 60
+        self.cubes[i][j].value = num
+        self.cubes[i][j].tmp_val = True
+        self.cubes[i][j].place_temp_number(y,x,(128,128,128))
+
     def set(self):
-        pass
+        self.reset_screen()
+        i, j = self.selected()
+        self.click_with_keyboard(i, j)
+        x = i * 60
+        y = j * 60
+        if self.cubes[i][j].value is not None:
+
+            self.cubes[i][j].tmp_val = False
+            self.cubes[i][j].place_number(y,x,(128,128,128))
 
     def selected(self):
         for i in range(9):
@@ -89,6 +115,15 @@ class Grid:
 
         return False
 
+    def unchangeable(self):
+        i,j = self.selected()
+        return self.cubes[i][j].get_unchangeable()
+
+    def button_check(self):
+        print("checking")
+
+    def button_solve(self):
+        print("solving")
 
 class Cube:
     rows=cols=9
@@ -97,22 +132,37 @@ class Cube:
         self.row = row
         self.col = col
         self.clicked = False
+        self.tmp_val = False
+        if self.value == None:
+            self.unchangeable = False
+        else:
+            self.unchangeable = True
 
     def draw_cube(self,screen,color,x,y,thickness):
         pygame.draw.rect(screen, (color), (x, y, 60, 60), thickness)
 
-    def place_numbers(self,x,y):
+    def place_number(self,x,y,color):
         if self.value is not None:
             fnt = pygame.font.SysFont("comicsans", 40)
             num = self.value
-            text = fnt.render(str(num), 1, (0, 0, 0))
+            text = fnt.render(str(num), 1, color)
             screen.blit(text, (x+25,y+20))
+
+
+    def place_temp_number(self,x,y,color):
+        if self.value is not None:
+            fnt = pygame.font.SysFont("comicsans", 40)
+            num = self.value
+            text = fnt.render(str(num), 1, color)
+            screen.blit(text, (x + 40, y + 10))
 
     def value(self):
         return value
 
     def clicked_status(self):
         return self.clicked
+    def get_unchangeable(self):
+        return self.unchangeable
 
 #sudoku board
 board = [7, 8, None, 4, None, None, 1, 2, None,
@@ -132,6 +182,14 @@ screen.fill((255,255,255))
 fnt = pygame.font.SysFont("comicsans", 40)
 text = fnt.render("Time: ", 1, (0, 0, 0))
 screen.blit(text, (380, 560))
+pygame.draw.rect(screen, (0,0,0), (40, 552, 100, 40), 2)
+fnt = pygame.font.SysFont("comicsans", 30)
+text = fnt.render("Check", 1, (0, 0, 0))
+screen.blit(text, (60, 565))
+pygame.draw.rect(screen, (0,0,0), (220, 552, 100, 40), 2)
+text = fnt.render("Solve", 1, (0, 0, 0))
+screen.blit(text, (245, 565))
+
 
 
 # make sudoku template
@@ -153,24 +211,60 @@ while running:
         c = grid.selected()
         if event.key == pygame.K_LEFT:
             if grid.selected() == False:
-                grid.click_with_mouse(0, 0)
+                grid.click_with_keyboard(0, 0)
             else:
-                grid.click_with_mouse(c[0], c[1] - 1)
+                grid.click_with_keyboard(c[0], c[1] - 1)
         elif event.key == pygame.K_RIGHT:
             if grid.selected() == False:
-                grid.click_with_mouse(0,0)
+                grid.click_with_keyboard(0,0)
             else:
-                grid.click_with_mouse(c[0],c[1]+1)
+                grid.click_with_keyboard(c[0],c[1]+1)
         elif event.key == pygame.K_UP:
             if grid.selected() == False:
-                grid.click_with_mouse(0, 0)
+                grid.click_with_keyboard(0, 0)
             else:
-                grid.click_with_mouse(c[0]-1, c[1])
+                grid.click_with_keyboard(c[0]-1, c[1])
         elif event.key == pygame.K_DOWN:
             if grid.selected() == False:
-                grid.click_with_mouse(0, 0)
+                grid.click_with_keyboard(0, 0)
             else:
-                grid.click_with_mouse(c[0]+1, c[1])
+                grid.click_with_keyboard(c[0]+1, c[1])
+        elif event.key == pygame.K_1:
+            if grid.selected() != False and grid.unchangeable() == False:
+                grid.set_temp(1)
+        elif event.key == pygame.K_2:
+            if grid.selected() != False and grid.unchangeable() == False:
+                grid.set_temp(2)
+        elif event.key == pygame.K_3:
+            if grid.selected() != False and grid.unchangeable() == False:
+                grid.set_temp(3)
+        elif event.key == pygame.K_4:
+            if grid.selected() != False and grid.unchangeable() == False:
+                grid.set_temp(4)
+        elif event.key == pygame.K_5:
+            if grid.selected() != False and grid.unchangeable() == False:
+                grid.set_temp(5)
+        elif event.key == pygame.K_6:
+            if grid.selected() != False and grid.unchangeable() == False:
+                grid.set_temp(6)
+        elif event.key == pygame.K_7:
+            if grid.selected() != False and grid.unchangeable() == False:
+                grid.set_temp(7)
+        elif event.key == pygame.K_8:
+            if grid.selected() != False and grid.unchangeable() == False:
+                grid.set_temp(8)
+        elif event.key == pygame.K_9:
+            if grid.selected() != False and grid.unchangeable() == False:
+                grid.set_temp(9)
+        elif event.key == pygame.K_BACKSPACE:
+            if grid.selected() != False and grid.unchangeable() == False:
+                grid.set_temp(None)
+                grid.set()
+        elif event.key == pygame.K_RETURN:
+            if grid.selected() != False and grid.unchangeable() == False:
+                grid.set()
+
+
 
 
     pygame.display.update()
