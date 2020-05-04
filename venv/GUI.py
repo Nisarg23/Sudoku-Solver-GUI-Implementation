@@ -1,5 +1,7 @@
 import pygame
-from Solver import solve
+import random
+import numpy as np, numpy.random
+from Solver import solve, valid
 pygame.font.init()
 
 class Grid:
@@ -40,10 +42,10 @@ class Grid:
         pygame.draw.rect(screen, (0, 0, 0), (40, 552, 100, 40), 2)
         fnt = pygame.font.SysFont("comicsans", 25)
         text = fnt.render("Check", 1, (0, 0, 0))
-        screen.blit(text, (60, 565))
+        screen.blit(text, (65, 565))
         pygame.draw.rect(screen, (0, 0, 0), (220, 552, 100, 40), 2)
         text = fnt.render("Solve", 1, (0, 0, 0))
-        screen.blit(text, (245, 565))
+        screen.blit(text, (250, 565))
         pygame.draw.rect(screen, (0, 0, 0), (400, 552, 100, 40), 2)
         text = fnt.render("New Board", 1, (0, 0, 0))
         screen.blit(text, (405, 565))
@@ -150,10 +152,37 @@ class Grid:
         self.reset_screen()
 
     def button_new_board(self):
-        print("generating new board")
-
+        self.new_board()
+        self.reset_screen()
     def solver(self):
         solve(self.board)
+
+    def new_board(self):
+        array = []
+
+        # generates 9 random numbers with sum 36
+        rand = np.random.multinomial(36, np.ones(9)/9, size=1)[0]
+
+        # adds rand[i] numbers of 1-9 digits to array
+        for i in range (1,10):
+            b = rand[i-1]
+            for j in range(0,b):
+                array.append(i)
+
+        # adds 45 nones to array
+        for i in range(45):
+            array.append(None)
+
+        random.shuffle(array)
+        for i in range(81):
+            self.board[i] = array[i]
+        print(array)
+
+        self.cubes = [[], [], [], [], [], [], [], [], []]
+        for i in range(9):
+            for j in range(9):
+                self.cubes[i].append(Cube(board[i * 9 + j], i, j))
+
 
 class Cube:
     rows=cols=9

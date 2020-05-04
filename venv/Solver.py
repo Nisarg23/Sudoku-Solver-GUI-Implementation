@@ -97,6 +97,11 @@ def find_empty(board):
 
     return None
 
+def valid(board):
+    if box_check(board) is None and vertical_check(board) is None and horizontal_check(board) is None:
+        return True
+    return False
+
 def solve(board):
     index = find_empty(board)
 
@@ -105,7 +110,7 @@ def solve(board):
 
     for i in range(1,10):
         board[index] = i
-        if box_check(board) is None and vertical_check(board) is None and horizontal_check(board) is None:
+        if valid(board):
             if solve(board):
                 return True
 
