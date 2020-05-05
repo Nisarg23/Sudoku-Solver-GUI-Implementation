@@ -111,7 +111,7 @@ def solve(board,cubes,grid):
     #     a = 8
     #     b = 8
 
-    if not index:
+    if index is None:
         return True
 
     for i in range(1,10):

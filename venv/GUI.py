@@ -187,10 +187,42 @@ class Grid:
                 [6,4,5,9,7,8,3,1,2],
                 [9,7,8,3,1,2,6,4,5]]
 
-        for i in range(9):
-            rand = random.randint(0,9)
-            swap(i, rand, base)
+        # # step 1: swap numbers
+        # for i in range(9):
+        #     rand = random.randint(0,9)
+        #     swap(i, rand, base)
 
+        # # step 2: sawp 1-3 rows, 4-6 rows, and 7-9 rows
+        # for i in range(9):
+        #     rand = random.randint(0,2)
+        #     block_num = i // 3
+        #     swap_row = block_num*3 + rand
+        #     swap_rows(i, swap_row,base)
+
+        # step 3: swap 1-3 columns, 4-6 columns, and 7-9 columns
+        # for i in range(9):
+        #     rand = random.randint(0,2)
+        #     block_num = i // 3
+        #     swap_column = block_num*3 + rand
+        #     swap_columns(i, swap_column,base)
+
+        # step 4: swap blocks of rows
+        # for i in range(3):
+        #     rand = random.randint(0,2)
+        #     swap_rows3x3(i,rand,base)
+
+        # step 5: swap bolcks of columns
+        print("")
+        for i in range(9):
+            print(base[i])
+        for i in range(3):
+            rand = random.randint(0, 2)
+            swap_columns3x3(i, rand, base)
+            print(i, rand)
+        for i in range(9):
+            print(base[i])
+
+        # taking 36 random numbers
         b= []
         for i in range(36):
             b.append(1)
@@ -266,6 +298,34 @@ def swap(num, rand_num,board):
             elif board[i][j] == rand_num:
                 board[i][j] = num
 
+    return None
+
+def swap_rows(row,swap_row,board):
+    if row == swap_row:
+        return None
+    board[row],board[swap_row] = board[swap_row],board[row]
+    return None
+
+def swap_columns(column,swap_column,board):
+    if column == swap_column:
+        return None
+    for i in range(9):
+        board[i][column], board[i][swap_column] = board[i][swap_column], board[i][column]
+    return None
+
+def swap_rows3x3(block,swap_block,board):
+    if block == swap_block:
+        return None
+    board[block*3],board[swap_block*3] = board[swap_block*3],board[block*3]
+    board[block*3+1], board[swap_block*3+1] = board[swap_block*3+1], board[block*3+1]
+    board[block*3+2], board[swap_block*3+2] = board[swap_block*3+2], board[block*3+2]
+    return None
+
+def swap_columns3x3(block,swap_block,board):
+    if block == swap_block:
+        return None
+    for i in range(9):
+        board[i][block], board[i][swap_block] = board[i][swap_block], board[i][block]
     return None
 
 #sudoku board
