@@ -145,7 +145,7 @@ class Grid:
 
 
     def button_solve(self):
-        solve(self.board)
+        self.solver()
         for i in range(9):
             for j in range(9):
                 self.cubes[i][j].value = self.board[i*9+j]
@@ -154,29 +154,40 @@ class Grid:
     def button_new_board(self):
         self.new_board()
         self.reset_screen()
+
+
     def solver(self):
-        solve(self.board)
+        solve(self.board, self.cubes, self)
 
     def new_board(self):
-        array = []
+        base = [[1,2,3,4,5,6,7,8,9],
+                [4,5,6,7,8,9,1,2,3],
+                [7,8,9,1,2,3,4,5,6],
+                [2,3,1,5,6,4,8,9,7],
+                [5,6,4,8,9,7,2,3,1],
+                [8,9,7,2,3,1,5,6,4],
+                [3,1,2,6,4,5,9,7,8],
+                [6,4,5,9,7,8,3,1,2],
+                [9,7,8,3,1,2,6,4,5]]
 
-        # generates 9 random numbers with sum 36
-        rand = np.random.multinomial(36, np.ones(9)/9, size=1)[0]
+        for i in range(9):
+            rand = random.randint(0,9)
+            swap(i, rand, base)
 
-        # adds rand[i] numbers of 1-9 digits to array
-        for i in range (1,10):
-            b = rand[i-1]
-            for j in range(0,b):
-                array.append(i)
-
-        # adds 45 nones to array
+        b= []
+        for i in range(36):
+            b.append(1)
         for i in range(45):
-            array.append(None)
+            b.append(None)
+        random.shuffle(b)
 
-        random.shuffle(array)
-        for i in range(81):
-            self.board[i] = array[i]
-        print(array)
+        for i in range(9):
+            for j in range(9):
+                if b[i*9+j] == 1:
+                    board[i*9+j] = base[i][j]
+                else:
+                    board[i*9+j] = None
+
 
         self.cubes = [[], [], [], [], [], [], [], [], []]
         for i in range(9):
@@ -227,6 +238,18 @@ class Cube:
     def get_unchangeable(self):
         return self.unchangeable
 
+def swap(num, rand_num,board):
+    if num == 0 or rand_num == 0 or num == rand_num:
+        return None
+
+    for i in range(9):
+        for j in range(9):
+            if board[i][j] == num:
+                board[i][j] = rand_num
+            elif board[i][j] == rand_num:
+                board[i][j] = num
+
+    return None
 
 #sudoku board
 board = [7, 8, None, 4, None, None, 1, 2, None,

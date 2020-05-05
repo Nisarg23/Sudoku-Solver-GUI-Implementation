@@ -1,5 +1,5 @@
 import math
-
+import pygame
 
 def vertical_check(s):
     for i in range(9):
@@ -102,20 +102,29 @@ def valid(board):
         return True
     return False
 
-def solve(board):
+def solve(board,cubes,grid):
     index = find_empty(board)
+    # if index is not None:
+    #     a = index // 9
+    #     b = index % 9
+    # else:
+    #     a = 8
+    #     b = 8
 
     if not index:
         return True
 
     for i in range(1,10):
         board[index] = i
+        # cubes[a][b].value = i
         if valid(board):
-            if solve(board):
+            if solve(board,cubes,grid):
                 return True
 
         board[index] = None
-
+        # cubes[a][b].value = None
+        # grid.reset_screen()
+        # pygame.display.update()
     return False
 
 
