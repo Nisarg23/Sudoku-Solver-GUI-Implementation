@@ -1,5 +1,6 @@
 import pygame
 import random
+import time
 import numpy as np, numpy.random
 from Solver import solve, valid
 pygame.font.init()
@@ -135,7 +136,13 @@ class Grid:
         return self.cubes[i][j].get_unchangeable()
 
     def button_check(self):
+        pygame.draw.rect(screen, (255, 0, 0), (40, 552, 100, 40), 2)
+        text = fnt.render("Check", 1, (0, 0, 0))
+        screen.blit(text, (65, 565))
+        pygame.display.update()
+        time.sleep(0.15)
         self.solver()
+        self.reset_screen()
         for i in range(9):
             for j in range(9):
                 x = i*60
@@ -145,6 +152,11 @@ class Grid:
 
 
     def button_solve(self):
+        pygame.draw.rect(screen, (255, 0, 0), (220, 552, 100, 40), 2)
+        text = fnt.render("Solve", 1, (0, 0, 0))
+        screen.blit(text, (250, 565))
+        pygame.display.update()
+        time.sleep(0.15)
         self.solver()
         for i in range(9):
             for j in range(9):
@@ -152,6 +164,11 @@ class Grid:
         self.reset_screen()
 
     def button_new_board(self):
+        pygame.draw.rect(screen, (255, 0, 0), (400, 552, 100, 40), 2)
+        text = fnt.render("New Board", 1, (0, 0, 0))
+        screen.blit(text, (405, 565))
+        pygame.display.update()
+        time.sleep(0.15)
         self.new_board()
         self.reset_screen()
 
